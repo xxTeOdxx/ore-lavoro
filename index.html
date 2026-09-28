@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Registro Ore</title>
+<style>
+  :root{
+    --bg:#F2F2F7;
+    --card:#FFFFFF;
+    --label:#1C1C1E;
+    --secondary:#8A8A8E;
+    --tertiary:#C6C6C8;
+    --blue:#007AFF;
+    --green:#34C759;
+    --sep:rgba(60,60,67,0.29);
+    --segbg:rgba(118,118,128,0.12);
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#000000; --card:#1C1C1E; --label:#F2F2F7; --secondary:#8E8E93;
+      --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158;
+      --sep:rgba(84,84,88,0.65); --segbg:rgba(118,118,128,0.24);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#000000; --card:#1C1C1E; --label:#F2F2F7; --secondary:#8E8E93;
+    --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158;
+    --sep:rgba(84,84,88,0.65); --segbg:rgba(118,118,128,0.24);
+  }
+  body{
+    margin:0; background:var(--bg); color:var(--label); height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 8px;
+    text-align:center; position:sticky; top:0; background:var(--bg); z-index:10;
+  }
+  h1{font-size:17px; font-weight:600; margin:0;}
+  .segwrap{padding:8px 16px 12px; position:sticky; top:calc(env(safe-area-inset-top,0px) + 40px); background:var(--bg); z-index:10;}
+  .seg{
+    display:flex; background:var(--segbg); border-radius:9px; padding:2px; position:relative;
+  }
+  .seg button{
+    flex:1; border:none; background:none; padding:6px 4px; font-size:13px; font-weight:600;
+    color:var(--label); border-radius:7px; position:relative; z-index:1; cursor:pointer;
+    font-family:inherit; transition:color .2s;
+  }
+  .seg button.active{color:var(--label);}
+  .seg-indicator{
+    position:absolute; top:2px; bottom:2px; width:calc(50% - 2px); left:2px;
+    background:var(--card); border-radius:7px; box-shadow:0 1px 3px rgba(0,0,0,0.12);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  main{max-width:520px; margin:0 auto; padding:0 16px 50px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .group-title{
+    font-size:13px; font-weight:400; color:var(--secondary); text-transform:uppercase;
+    letter-spacing:0.02em; margin:20px 4px 7px;
+  }
+  .card{
+    background:var(--card); border-radius:14px; overflow:hidden;
+  }
+  .row{
+    display:flex; align-items:center; justify-content:space-between; padding:13px 15px;
+    border-bottom:1px solid var(--sep);
+  }
+  .row:last-child{border-bottom:none;}
+  .row label{font-size:16px; font-weight:400;}
+  .row input[type=date], .row input[type=number]{
+    border:none; background:none; text-align:right; font-size:16px; color:var(--blue);
+    font-family:inherit; -webkit-appearance:none; width:130px;
+  }
+  .row input[type=number]{width:90px; font-weight:600;}
+  textarea{
+    width:100%; border:none; background:none; font-family:inherit; font-size:16px;
+    padding:13px 15px; min-height:70px; resize:vertical; color:var(--label);
+  }
+  textarea::placeholder{color:var(--tertiary);}
+  .save-btn{
+    width:100%; margin-top:20px; padding:14px; border:none; border-radius:14px;
+    background:var(--blue); color:#fff; font-size:16px; font-weight:600; font-family:inherit;
+    cursor:pointer;
+  }
+  .save-btn:active{opacity:0.75;}
+  .today-pay{ text-align:center; margin-top:12px; font-size:13px; color:var(--secondary);}
+  .today-pay b{color:var(--green); font-weight:600;}
+  .toast{
+    margin-top:12px; text-align:center; padding:9px; border-radius:10px;
+    background:rgba(52,199,89,0.12); color:var(--green); font-size:13px; font-weight:600;
+    display:none;
+  }
+  .toast.show{display:block;}
+  .hint{font-size:12px; color:var(--secondary); margin:7px 4px 0; line-height:1.4;}
+
+  .stats-row{display:flex; gap:10px; margin-top:14px;}
+  .stat{flex:1; background:var(--card); border-radius:14px; padding:12px 14px;}
+  .stat .l{font-size:12px; color:var(--secondary);}
+  .stat .v{font-size:20px; font-weight:600; margin-top:3px;}
+  .stat.blue .v{color:var(--blue);}
+  .stat.prev{background:var(--card); border-radius:14px; padding:12px 14px; margin-top:10px;
+    display:flex; align-items:center; justify-content:space-between;}
+  .stat.prev .v{color:var(--green); font-size:18px;}
+
+  .entry-row{ padding:11px 15px; }
+  .entry-top{display:flex; justify-content:space-between; align-items:baseline;}
+  .entry-date{font-size:16px;}
+  .entry-pay{font-size:16px; font-weight:600; color:var(--green);}
+  .entry-sub{font-size:12.5px; color:var(--secondary); margin-top:2px; display:flex; gap:8px;}
+  .entry-note{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chev{color:var(--tertiary); font-size:13px;}
+
+  .empty{padding:40px 10px; text-align:center; color:var(--secondary); font-size:14px;}
+  .notice{
+    margin-top:22px; padding:13px 14px; border-radius:14px; background:var(--card);
+    font-size:12px; line-height:1.5; color:var(--secondary);
+  }
+</style>
+</head>
+<body>
+
+<header><h1>Registro Ore</h1></header>
+
+<div class="segwrap">
+  <div class="seg">
+    <div class="seg-indicator" id="segIndicator"></div>
+    <button class="tab-btn active" data-tab="registra">Registra</button>
+    <button class="tab-btn" data-tab="riepilogo">Riepilogo</button>
+  </div>
+</div>
+
+<main>
+
+  <section id="registra" class="view active">
+    <div class="card">
+      <div class="row">
+        <label for="dateInput">Data</label>
+        <input type="date" id="dateInput">
+      </div>
+      <div class="row">
+        <label for="hoursInput">Ore lavorate</label>
+        <input type="number" id="hoursInput" min="0" max="24" step="0.25" placeholder="0">
+      </div>
+    </div>
+
+    <div class="group-title">Note</div>
+    <div class="card">
+      <textarea id="noteInput" placeholder="Cosa hai fatto, cantiere, turno..."></textarea>
+    </div>
+
+    <button class="save-btn" id="saveBtn">Salva</button>
+    <div class="today-pay" id="todayPay"></div>
+    <div class="toast" id="toast">Salvato</div>
+    <div class="hint">Cambia la data per correggere o aggiungere un giorno diverso da oggi.</div>
+    <div class="hint" id="syncStatus" style="margin-top:4px;"></div>
+  </section>
+
+  <section id="riepilogo" class="view">
+    <div class="stats-row">
+      <div class="stat">
+        <div class="l">Ore questo mese</div>
+        <div class="v" id="statMonthHours">0</div>
+      </div>
+      <div class="stat blue">
+        <div class="l">Stipendio mese</div>
+        <div class="v" id="statMonthPay">0 €</div>
+      </div>
+    </div>
+    <div class="stat prev">
+      <div class="l">Totale mesi precedenti</div>
+      <div class="v" id="statPrevTotal">0 €</div>
+    </div>
+
+    <div id="monthsWrap"></div>
+    <div class="empty" id="emptyState" style="display:none;">Nessuna ora registrata ancora.</div>
+
+    <div class="notice">
+      Questo è un prototipo: le ore restano salvate su questo dispositivo per farti vedere come funziona.
+      Il collegamento vero a Google Sheets e GitHub va impostato a parte — se ti piace il resto, lo prepariamo dopo.
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ====== CONFIGURA QUI DOPO IL DEPLOY DELLO SCRIPT ======
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySGigLIWQZmPaJczHpCva8hJbAkwmww5QxMQ6gw-jlFl1QnOboMPcXKPmyxCYSXkw/exec"; // incolla qui l'URL del Web App di Apps Script (es. https://script.google.com/macros/s/XXXX/exec)
+const TOKEN = "Giulia"; // deve essere identico a quello dentro Code.gs
+// =========================================================
+
+const RATE = 10;
+const KEY = "registro_ore_entries_v1";
+let syncing = false;
+
+function loadEntries(){
+  try{ const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : {}; }
+  catch(e){ return {}; }
+}
+function saveEntries(data){ try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){} }
+
+function syncStatus(msg, isError){
+  const el = document.getElementById("syncStatus");
+  if(!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? "#FF3B30" : "var(--secondary)";
+}
+
+async function pushEntry(key, entry){
+  if(!SCRIPT_URL) return;
+  try{
+    syncStatus("Sincronizzazione...");
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ token: TOKEN, data: key, ore: entry.hours, nota: entry.note || "" })
+    });
+    syncStatus("Sincronizzato con Google Sheet");
+  }catch(err){
+    syncStatus("Salvato solo su questo dispositivo (sync non riuscita)", true);
+  }
+}
+
+async function pullEntries(){
+  if(!SCRIPT_URL) return;
+  try{
+    const res = await fetch(SCRIPT_URL);
+    const rows = await res.json();
+    rows.forEach(r=>{
+      if(r.data) entries[r.data] = { hours: Number(r.ore), note: r.nota || "" };
+    });
+    saveEntries(entries);
+  }catch(err){
+    // niente connessione o pagina non ancora ospitata fuori da Claude: si resta sui dati locali
+  }
+}
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+const MONTHS = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const DAYS = ["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"];
+
+function fmtDateShort(key){
+  const [y,m,day] = key.split("-").map(Number);
+  return day + " " + MONTHS[m-1].slice(0,3);
+}
+function fmtDow(key){
+  const d = new Date(key+"T12:00:00");
+  return DAYS[d.getDay()].slice(0,3);
+}
+function fmtEuro(n){
+  return n.toLocaleString("it-IT",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+}
+
+let entries = loadEntries();
+
+// ---- segmented tabs ----
+const segIndicator = document.getElementById("segIndicator");
+document.querySelectorAll(".tab-btn").forEach((btn, i)=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+    segIndicator.style.transform = i === 0 ? "translateX(0)" : "translateX(100%)";
+    if(btn.dataset.tab === "riepilogo") renderRiepilogo();
+  });
+});
+
+// ---- registra ----
+const dateInput = document.getElementById("dateInput");
+const hoursInput = document.getElementById("hoursInput");
+const noteInput = document.getElementById("noteInput");
+const todayPay = document.getElementById("todayPay");
+const toast = document.getElementById("toast");
+
+function loadDateIntoForm(key){
+  dateInput.value = key;
+  const e = entries[key];
+  hoursInput.value = e ? e.hours : "";
+  noteInput.value = e ? (e.note || "") : "";
+  updateTodayPay();
+}
+
+dateInput.addEventListener("change", ()=> loadDateIntoForm(dateInput.value));
+
+function updateTodayPay(){
+  const h = parseFloat(hoursInput.value) || 0;
+  todayPay.innerHTML = h > 0 ? `Paga di quel giorno: <b>${fmtEuro(h*RATE)}</b>` : "";
+}
+hoursInput.addEventListener("input", updateTodayPay);
+
+document.getElementById("saveBtn").addEventListener("click", ()=>{
+  const h = parseFloat(hoursInput.value);
+  const key = dateInput.value || todayKey();
+  if(!h || h <= 0){ hoursInput.focus(); return; }
+  entries[key] = { hours: h, note: noteInput.value.trim() };
+  saveEntries(entries);
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1600);
+  pushEntry(key, entries[key]);
+});
+
+function openEntryForEdit(key){
+  document.querySelector('.tab-btn[data-tab="registra"]').click();
+  loadDateIntoForm(key);
+}
+
+// ---- riepilogo, raggruppato per mese ----
+function renderRiepilogo(){
+  const wrap = document.getElementById("monthsWrap");
+  const keys = Object.keys(entries).sort().reverse();
+  wrap.innerHTML = "";
+  document.getElementById("emptyState").style.display = keys.length ? "none" : "block";
+
+  const now = new Date();
+  const curYear = now.getFullYear(), curMonth = now.getMonth();
+  let monthHours = 0, monthPay = 0, prevTotal = 0;
+
+  const byMonth = {};
+  keys.forEach(key=>{
+    const [y,m] = key.split("-").map(Number);
+    const mk = y+"-"+m;
+    if(!byMonth[mk]) byMonth[mk] = { y, m, keys: [] };
+    byMonth[mk].keys.push(key);
+    const pay = entries[key].hours * RATE;
+    if(y === curYear && (m-1) === curMonth){ monthHours += entries[key].hours; monthPay += pay; }
+    else prevTotal += pay;
+  });
+
+  Object.values(byMonth).sort((a,b)=> b.y-a.y || b.m-a.m).forEach(group=>{
+    const label = MONTHS[group.m-1] + " " + group.y;
+    let groupHours = 0, groupPay = 0;
+    group.keys.forEach(k=>{ groupHours += entries[k].hours; groupPay += entries[k].hours*RATE; });
+
+    const title = document.createElement("div");
+    title.className = "group-title";
+    title.textContent = label + " · " + groupHours + "h · " + fmtEuro(groupPay);
+    wrap.appendChild(title);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    group.keys.forEach(key=>{
+      const e = entries[key];
+      const row = document.createElement("div");
+      row.className = "row entry-row";
+      row.style.cursor = "pointer";
+      row.innerHTML = `
+        <div style="flex:1; min-width:0;">
+          <div class="entry-top">
+            <span class="entry-date">${fmtDow(key)} ${fmtDateShort(key)}</span>
+            <span class="entry-pay">${fmtEuro(e.hours*RATE)}</span>
+          </div>
+          <div class="entry-sub">
+            <span>${e.hours}h</span>
+            ${e.note ? `<span class="entry-note">${e.note}</span>` : ""}
+          </div>
+        </div>
+        <span class="chev">›</span>`;
+      row.addEventListener("click", ()=> openEntryForEdit(key));
+      card.appendChild(row);
+    });
+    wrap.appendChild(card);
+  });
+
+  document.getElementById("statMonthHours").textContent = monthHours + "h";
+  document.getElementById("statMonthPay").textContent = fmtEuro(monthPay);
+  document.getElementById("statPrevTotal").textContent = fmtEuro(prevTotal);
+}
+
+loadDateIntoForm(todayKey());
+renderRiepilogo();
+pullEntries().then(()=>{ loadDateIntoForm(dateInput.value || todayKey()); renderRiepilogo(); });
+</script>
+</body>
+</html>

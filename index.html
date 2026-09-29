@@ -13,6 +13,7 @@
     --tertiary:#C6C6C8;
     --blue:#007AFF;
     --green:#34C759;
+    --red:#FF3B30;
     --sep:rgba(60,60,67,0.29);
     --segbg:rgba(118,118,128,0.12);
     box-sizing:border-box;
@@ -24,13 +25,13 @@
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#000000; --card:#1C1C1E; --label:#F2F2F7; --secondary:#8E8E93;
-      --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158;
+      --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158; --red:#FF453A;
       --sep:rgba(84,84,88,0.65); --segbg:rgba(118,118,128,0.24);
     }
   }
   :root[data-theme="dark"]{
     --bg:#000000; --card:#1C1C1E; --label:#F2F2F7; --secondary:#8E8E93;
-    --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158;
+    --tertiary:#3A3A3C; --blue:#0A84FF; --green:#30D158; --red:#FF453A;
     --sep:rgba(84,84,88,0.65); --segbg:rgba(118,118,128,0.24);
   }
   body{
@@ -44,15 +45,12 @@
   }
   h1{font-size:17px; font-weight:600; margin:0;}
   .segwrap{padding:8px 16px 12px; position:sticky; top:calc(env(safe-area-inset-top,0px) + 40px); background:var(--bg); z-index:10;}
-  .seg{
-    display:flex; background:var(--segbg); border-radius:9px; padding:2px; position:relative;
-  }
+  .seg{display:flex; background:var(--segbg); border-radius:9px; padding:2px; position:relative;}
   .seg button{
     flex:1; border:none; background:none; padding:6px 4px; font-size:13px; font-weight:600;
     color:var(--label); border-radius:7px; position:relative; z-index:1; cursor:pointer;
-    font-family:inherit; transition:color .2s;
+    font-family:inherit;
   }
-  .seg button.active{color:var(--label);}
   .seg-indicator{
     position:absolute; top:2px; bottom:2px; width:calc(50% - 2px); left:2px;
     background:var(--card); border-radius:7px; box-shadow:0 1px 3px rgba(0,0,0,0.12);
@@ -66,9 +64,7 @@
     font-size:13px; font-weight:400; color:var(--secondary); text-transform:uppercase;
     letter-spacing:0.02em; margin:20px 4px 7px;
   }
-  .card{
-    background:var(--card); border-radius:14px; overflow:hidden;
-  }
+  .card{background:var(--card); border-radius:14px; overflow:hidden;}
   .row{
     display:flex; align-items:center; justify-content:space-between; padding:13px 15px;
     border-bottom:1px solid var(--sep);
@@ -87,16 +83,26 @@
   textarea::placeholder{color:var(--tertiary);}
   .save-btn{
     width:100%; margin-top:20px; padding:14px; border:none; border-radius:14px;
-    background:var(--blue); color:#fff; font-size:16px; font-weight:600; font-family:inherit;
-    cursor:pointer;
+    background:var(--blue); color:#fff; font-size:16px; font-weight:600; font-family:inherit; cursor:pointer;
   }
   .save-btn:active{opacity:0.75;}
-  .today-pay{ text-align:center; margin-top:12px; font-size:13px; color:var(--secondary);}
+  .del-btn{
+    width:100%; margin-top:10px; padding:14px; border:none; border-radius:14px;
+    background:var(--card); color:var(--red); font-size:16px; font-weight:600; font-family:inherit;
+    cursor:pointer; display:none;
+  }
+  .del-btn:active{opacity:0.75;}
+  .del-btn.show{display:block;}
+  .edit-banner{
+    margin-top:12px; padding:9px 14px; border-radius:10px; background:rgba(0,122,255,0.12);
+    color:var(--blue); font-size:13px; font-weight:600; display:none;
+  }
+  .edit-banner.show{display:block;}
+  .today-pay{text-align:center; margin-top:12px; font-size:13px; color:var(--secondary);}
   .today-pay b{color:var(--green); font-weight:600;}
   .toast{
     margin-top:12px; text-align:center; padding:9px; border-radius:10px;
-    background:rgba(52,199,89,0.12); color:var(--green); font-size:13px; font-weight:600;
-    display:none;
+    background:rgba(52,199,89,0.12); color:var(--green); font-size:13px; font-weight:600; display:none;
   }
   .toast.show{display:block;}
   .hint{font-size:12px; color:var(--secondary); margin:7px 4px 0; line-height:1.4;}
@@ -106,23 +112,18 @@
   .stat .l{font-size:12px; color:var(--secondary);}
   .stat .v{font-size:20px; font-weight:600; margin-top:3px;}
   .stat.blue .v{color:var(--blue);}
-  .stat.prev{background:var(--card); border-radius:14px; padding:12px 14px; margin-top:10px;
-    display:flex; align-items:center; justify-content:space-between;}
-  .stat.prev .v{color:var(--green); font-size:18px;}
+  .stat.prev{margin-top:10px; display:flex; align-items:center; justify-content:space-between;}
+  .stat.prev .v{color:var(--green); font-size:18px; margin-top:0;}
 
-  .entry-row{ padding:11px 15px; }
+  .entry-row{padding:11px 15px;}
   .entry-top{display:flex; justify-content:space-between; align-items:baseline;}
   .entry-date{font-size:16px;}
   .entry-pay{font-size:16px; font-weight:600; color:var(--green);}
   .entry-sub{font-size:12.5px; color:var(--secondary); margin-top:2px; display:flex; gap:8px;}
   .entry-note{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .chev{color:var(--tertiary); font-size:13px;}
+  .chev{color:var(--tertiary); font-size:13px; margin-left:8px;}
 
   .empty{padding:40px 10px; text-align:center; color:var(--secondary); font-size:14px;}
-  .notice{
-    margin-top:22px; padding:13px 14px; border-radius:14px; background:var(--card);
-    font-size:12px; line-height:1.5; color:var(--secondary);
-  }
 </style>
 </head>
 <body>
@@ -140,14 +141,16 @@
 <main>
 
   <section id="registra" class="view active">
-    <div class="card">
+    <div class="edit-banner" id="editBanner"></div>
+
+    <div class="card" style="margin-top:12px;">
       <div class="row">
         <label for="dateInput">Data</label>
         <input type="date" id="dateInput">
       </div>
       <div class="row">
         <label for="hoursInput">Ore lavorate</label>
-        <input type="number" id="hoursInput" min="0" max="24" step="0.25" placeholder="0">
+        <input type="number" id="hoursInput" min="0" max="24" step="0.25" placeholder="0" inputmode="decimal">
       </div>
     </div>
 
@@ -157,9 +160,10 @@
     </div>
 
     <button class="save-btn" id="saveBtn">Salva</button>
+    <button class="del-btn" id="delBtn">Elimina questo giorno</button>
     <div class="today-pay" id="todayPay"></div>
     <div class="toast" id="toast">Salvato</div>
-    <div class="hint">Cambia la data per correggere o aggiungere un giorno diverso da oggi.</div>
+    <div class="hint">Scegli una data per aggiungere o correggere un giorno. Se esiste già, lo vedi qui e puoi modificarlo o eliminarlo.</div>
     <div class="hint" id="syncStatus" style="margin-top:4px;"></div>
   </section>
 
@@ -181,77 +185,106 @@
 
     <div id="monthsWrap"></div>
     <div class="empty" id="emptyState" style="display:none;">Nessuna ora registrata ancora.</div>
-
-    <div class="notice">
-      Questo è un prototipo: le ore restano salvate su questo dispositivo per farti vedere come funziona.
-      Il collegamento vero a Google Sheets e GitHub va impostato a parte — se ti piace il resto, lo prepariamo dopo.
-    </div>
+    <div class="hint" id="listHint" style="display:none; text-align:center;">Tocca un giorno per modificarlo o eliminarlo.</div>
   </section>
 
 </main>
 
 <script>
-// ====== CONFIGURA QUI DOPO IL DEPLOY DELLO SCRIPT ======
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySGigLIWQZmPaJczHpCva8hJbAkwmww5QxMQ6gw-jlFl1QnOboMPcXKPmyxCYSXkw/exec"; // incolla qui l'URL del Web App di Apps Script (es. https://script.google.com/macros/s/XXXX/exec)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDPgFJPoYlKJyPc1n4wWF6ABgUlyghC2D_oa6VociwZsgCbHCEjcrHBpOYyNja6XMb/exec";
 const TOKEN = "Giulia"; // deve essere identico a quello dentro Code.gs
-// =========================================================
 
 const RATE = 10;
 const KEY = "registro_ore_entries_v1";
-let syncing = false;
+const QUEUE_KEY = "registro_ore_queue_v1";
 
 function loadEntries(){
   try{ const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : {}; }
   catch(e){ return {}; }
 }
 function saveEntries(data){ try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){} }
+function loadQueue(){
+  try{ const raw = localStorage.getItem(QUEUE_KEY); return raw ? JSON.parse(raw) : []; }
+  catch(e){ return []; }
+}
+function saveQueue(q){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){} }
+
+let entries = loadEntries();
+let queue = loadQueue();   // operazioni non ancora arrivate al foglio
+let flushing = false;
 
 function syncStatus(msg, isError){
   const el = document.getElementById("syncStatus");
-  if(!el) return;
   el.textContent = msg;
-  el.style.color = isError ? "#FF3B30" : "var(--secondary)";
+  el.style.color = isError ? "var(--red)" : "var(--secondary)";
 }
 
-async function pushEntry(key, entry){
-  if(!SCRIPT_URL) return;
+// ---- sincronizzazione con Google Sheet ----
+function enqueue(op){
+  // una sola operazione in coda per giorno: l'ultima vince
+  queue = queue.filter(o => o.data !== op.data);
+  queue.push(op);
+  saveQueue(queue);
+  flushQueue();
+}
+
+async function flushQueue(){
+  if(flushing || !queue.length) return;
+  flushing = true;
+  syncStatus("Sincronizzazione...");
   try{
-    syncStatus("Sincronizzazione...");
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ token: TOKEN, data: key, ore: entry.hours, nota: entry.note || "" })
-    });
+    while(queue.length){
+      const op = queue[0];
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ token: TOKEN, action: op.action, data: op.data, ore: op.ore, nota: op.nota || "" })
+      });
+      queue.shift();
+      saveQueue(queue);
+    }
     syncStatus("Sincronizzato con Google Sheet");
   }catch(err){
-    syncStatus("Salvato solo su questo dispositivo (sync non riuscita)", true);
+    syncStatus("Sync non riuscita: riprovo alla prossima apertura", true);
   }
+  flushing = false;
 }
 
 async function pullEntries(){
-  if(!SCRIPT_URL) return;
   try{
     const res = await fetch(SCRIPT_URL);
     const rows = await res.json();
+    if(!Array.isArray(rows)) return;
+    const fresh = {};
     rows.forEach(r=>{
-      if(r.data) entries[r.data] = { hours: Number(r.ore), note: r.nota || "" };
+      if(r.data) fresh[r.data] = { hours: Number(r.ore), note: r.nota || "" };
     });
+    // le modifiche ancora in coda hanno la precedenza sul foglio
+    queue.forEach(op=>{
+      if(op.action === "delete") delete fresh[op.data];
+      else fresh[op.data] = { hours: op.ore, note: op.nota || "" };
+    });
+    entries = fresh;
     saveEntries(entries);
   }catch(err){
-    // niente connessione o pagina non ancora ospitata fuori da Claude: si resta sui dati locali
+    syncStatus("Offline: mostro i dati salvati su questo dispositivo", true);
   }
 }
 
+// ---- utilità ----
 function todayKey(){
   const d = new Date();
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-
 const MONTHS = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
 const DAYS = ["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"];
 
 function fmtDateShort(key){
   const [y,m,day] = key.split("-").map(Number);
   return day + " " + MONTHS[m-1].slice(0,3);
+}
+function fmtDateLong(key){
+  const [y,m,day] = key.split("-").map(Number);
+  return day + " " + MONTHS[m-1] + " " + y;
 }
 function fmtDow(key){
   const d = new Date(key+"T12:00:00");
@@ -260,10 +293,11 @@ function fmtDow(key){
 function fmtEuro(n){
   return n.toLocaleString("it-IT",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
 }
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
 
-let entries = loadEntries();
-
-// ---- segmented tabs ----
+// ---- tab ----
 const segIndicator = document.getElementById("segIndicator");
 document.querySelectorAll(".tab-btn").forEach((btn, i)=>{
   btn.addEventListener("click", ()=>{
@@ -276,22 +310,36 @@ document.querySelectorAll(".tab-btn").forEach((btn, i)=>{
   });
 });
 
-// ---- registra ----
+// ---- registra / modifica ----
 const dateInput = document.getElementById("dateInput");
 const hoursInput = document.getElementById("hoursInput");
 const noteInput = document.getElementById("noteInput");
 const todayPay = document.getElementById("todayPay");
 const toast = document.getElementById("toast");
+const saveBtn = document.getElementById("saveBtn");
+const delBtn = document.getElementById("delBtn");
+const editBanner = document.getElementById("editBanner");
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1600);
+}
 
 function loadDateIntoForm(key){
   dateInput.value = key;
   const e = entries[key];
   hoursInput.value = e ? e.hours : "";
   noteInput.value = e ? (e.note || "") : "";
+  const editing = !!e;
+  saveBtn.textContent = editing ? "Aggiorna" : "Salva";
+  delBtn.classList.toggle("show", editing);
+  editBanner.classList.toggle("show", editing);
+  editBanner.textContent = editing ? "Stai modificando " + fmtDateLong(key) : "";
   updateTodayPay();
 }
 
-dateInput.addEventListener("change", ()=> loadDateIntoForm(dateInput.value));
+dateInput.addEventListener("change", ()=> loadDateIntoForm(dateInput.value || todayKey()));
 
 function updateTodayPay(){
   const h = parseFloat(hoursInput.value) || 0;
@@ -299,20 +347,33 @@ function updateTodayPay(){
 }
 hoursInput.addEventListener("input", updateTodayPay);
 
-document.getElementById("saveBtn").addEventListener("click", ()=>{
+saveBtn.addEventListener("click", ()=>{
   const h = parseFloat(hoursInput.value);
   const key = dateInput.value || todayKey();
   if(!h || h <= 0){ hoursInput.focus(); return; }
+  const wasEditing = !!entries[key];
   entries[key] = { hours: h, note: noteInput.value.trim() };
   saveEntries(entries);
-  toast.classList.add("show");
-  setTimeout(()=>toast.classList.remove("show"), 1600);
-  pushEntry(key, entries[key]);
+  loadDateIntoForm(key);
+  showToast(wasEditing ? "Aggiornato" : "Salvato");
+  enqueue({ action: "save", data: key, ore: h, nota: entries[key].note });
+});
+
+delBtn.addEventListener("click", ()=>{
+  const key = dateInput.value;
+  if(!entries[key]) return;
+  if(!confirm("Eliminare le ore del " + fmtDateLong(key) + "?")) return;
+  delete entries[key];
+  saveEntries(entries);
+  loadDateIntoForm(key);
+  showToast("Eliminato");
+  enqueue({ action: "delete", data: key });
 });
 
 function openEntryForEdit(key){
   document.querySelector('.tab-btn[data-tab="registra"]').click();
   loadDateIntoForm(key);
+  window.scrollTo(0,0);
 }
 
 // ---- riepilogo, raggruppato per mese ----
@@ -321,6 +382,7 @@ function renderRiepilogo(){
   const keys = Object.keys(entries).sort().reverse();
   wrap.innerHTML = "";
   document.getElementById("emptyState").style.display = keys.length ? "none" : "block";
+  document.getElementById("listHint").style.display = keys.length ? "block" : "none";
 
   const now = new Date();
   const curYear = now.getFullYear(), curMonth = now.getMonth();
@@ -362,7 +424,7 @@ function renderRiepilogo(){
           </div>
           <div class="entry-sub">
             <span>${e.hours}h</span>
-            ${e.note ? `<span class="entry-note">${e.note}</span>` : ""}
+            ${e.note ? `<span class="entry-note">${esc(e.note)}</span>` : ""}
           </div>
         </div>
         <span class="chev">›</span>`;
@@ -377,9 +439,15 @@ function renderRiepilogo(){
   document.getElementById("statPrevTotal").textContent = fmtEuro(prevTotal);
 }
 
+// ---- avvio ----
 loadDateIntoForm(todayKey());
 renderRiepilogo();
-pullEntries().then(()=>{ loadDateIntoForm(dateInput.value || todayKey()); renderRiepilogo(); });
+(async ()=>{
+  await flushQueue();
+  await pullEntries();
+  loadDateIntoForm(dateInput.value || todayKey());
+  renderRiepilogo();
+})();
 </script>
 </body>
 </html>
